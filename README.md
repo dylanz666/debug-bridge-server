@@ -34,12 +34,14 @@ uvicorn main:app --port 8001
 
 ```commandline
 # open below url on your browser
+
 https://127.0.0.1:8000/docs
 ```
 
 * __port assigned__:
 ```commandline
 # open below url on your browser with your own port
+
 https://127.0.0.1:<your port>/docs
 ```
 

@@ -33,6 +33,11 @@ class Command(BaseModel):
 
 @app.post("/bridge/run")
 async def run_command(command: Command):
+    # set env
+    env = os.environ.copy()
+    # disable stdout buffer
+    env["PYTHONUNBUFFERED"] = "1"
+
     if command.command is None or command.command is "":
         return {
             "status": "fail",
@@ -40,19 +45,16 @@ async def run_command(command: Command):
         }
     random_output_file_path = f"output/{RandomUtil.get_random_string(10)}.txt"
     with open(random_output_file_path, 'w') as file:
-        # fixme: need to make it able to save to file very quick
-        process = subprocess.Popen(command.command, stdout=file, shell=True)
-        # don't use process.wait() here, as we need to response immediately
-        # process.wait()
-        DataUtil.set_data(pid_mapper_file, f"pid_{process.pid}", {
-            "command": command.command,
-            "output": random_output_file_path
-        })
-        return {
-            "status": "success",
-            "message": f"The command is executed~",
-            "pid": process.pid
-        }
+        process = subprocess.Popen(command.command, stdout=file, stderr=file, text=True, shell=True, env=env)
+    DataUtil.set_data(pid_mapper_file, f"pid_{process.pid}", {
+        "command": command.command,
+        "output": random_output_file_path
+    })
+    return {
+        "status": "success",
+        "message": f"The command is executed~",
+        "pid": process.pid
+    }
 
 
 @app.get("/bridge/content/all")
