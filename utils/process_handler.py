@@ -13,13 +13,10 @@ class ProcessHandler:
 
             cmds = process.cmdline()
             for command in commands:
-                matched = False
                 for cmd in cmds:
                     if command in cmd:
-                        matched = True
-                if matched:
-                    print("Find process!")
-                    return process
+                        print("Find process!")
+                        return process
 
     @staticmethod
     def stop_process(process):
