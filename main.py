@@ -22,20 +22,29 @@ app.add_middleware(
 pid_mapper_file = "pid_mapper.json"
 
 
+class Command(BaseModel):
+    command: str
+
+
 @app.get("/", summary="ping", deprecated=False)
 async def ping():
     return "success"
 
 
-class Command(BaseModel):
-    command: str
+@app.get("/ping", summary="ping", deprecated=False)
+async def ping():
+    return "success"
 
 
 @app.post("/bridge/run")
 async def run_command(command: Command):
-    # set env
+    """
+    run command
+    :param command: request body, it's a Command object, such as: {"command":"ipconfig"}
+    :return: response body, including: status, message, pid
+    """
     env = os.environ.copy()
-    # disable stdout buffer
+    # disable stdout buffer to make it able to get log immediately
     env["PYTHONUNBUFFERED"] = "1"
 
     if command.command is None or command.command is "":
@@ -59,6 +68,11 @@ async def run_command(command: Command):
 
 @app.get("/bridge/content/all")
 async def get_bridge_content_by_pid(pid):
+    """
+    get all log content for specific process
+    :param pid: process id
+    :return: response body, including status, message, command, content
+    """
     output_file_path = DataUtil.get_data_by_jsonpath(pid_mapper_file, f"pid_{pid}.output")
     if not output_file_path or not os.path.exists(output_file_path):
         return {
@@ -75,7 +89,14 @@ async def get_bridge_content_by_pid(pid):
 
 
 @app.get("/bridge/content")
-async def get_bridge_content(pid, start_line=0, line_length=10):
+async def get_bridge_content(pid, start_line=0, line_length=20):
+    """
+    get all log content for specific process with start line and line length
+    :param pid: process id
+    :param start_line: start line of log content
+    :param line_length: how much line you want to get, default is 20
+    :return: response body, including status, message, command, content
+    """
     output_file_path = DataUtil.get_data_by_jsonpath(pid_mapper_file, f"pid_{pid}.output")
     if not output_file_path or not os.path.exists(output_file_path):
         return {
@@ -107,12 +128,17 @@ async def get_bridge_content(pid, start_line=0, line_length=10):
 
 @app.get("/bridge/pids")
 async def get_pids():
+    """
+    get all existing pids which are saved to pid mapper json file
+    :return: response body, including status, pids, all pids details
+    """
     pid_mapper = DataUtil.get_data(pid_mapper_file)
     pids = []
     for pid in pid_mapper:
         pids.append(pid[4:])
     pids = pids[::-1]
     return {
+        "status": "success",
         "pids": pids,
         "details": pid_mapper
     }
@@ -120,6 +146,10 @@ async def get_pids():
 
 @app.post("/bridge/pids/clear")
 async def clear_all_pids():
+    """
+    stop all processes and delete their log content files
+    :return: response body, including status, message, quantity
+    """
     output_files = FileUtil.list_all_files("output")
     file_deleted_quantity = 0
     for file in output_files:
@@ -147,6 +177,11 @@ async def clear_all_pids():
 
 @app.post("/bridge/pid/clear")
 async def clear_pid(pid):
+    """
+    stop process and delete it's log content file
+    :param pid: process id
+    :return: response body, including status, message, pid
+    """
     os.system(f"taskkill /F /PID {pid}")
 
     output_file_path = DataUtil.get_data_by_jsonpath(pid_mapper_file, f"pid_{pid}.output")
@@ -164,6 +199,11 @@ async def clear_pid(pid):
 
 @app.post("/bridge/pid/stop")
 async def stop_pid(pid):
+    """
+    stop pid
+    :param pid: process id
+    :return: response body, including status, message, pid
+    """
     os.system(f"taskkill /F /PID {pid}")
     return {
         "status": "success",
