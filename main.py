@@ -65,9 +65,11 @@ async def get_bridge_content_by_pid(pid):
             "status": "fail",
             "message": f"Cannot find content related to your pid {pid}, please double check!"
         }
+    command = DataUtil.get_data_by_jsonpath(pid_mapper_file, f"pid_{pid}.command")
     content = FileUtil.read_lines(output_file_path)
     return {
         "status": "success",
+        "command": command,
         "content": content
     }
 
@@ -86,14 +88,19 @@ async def get_bridge_content(pid, start_line=0, line_length=10):
     content = []
     with open(output_file_path, 'r') as file:
         for _ in range(start_line):
-            next(file)
+            try:
+                next(file)
+            except RuntimeError:
+                pass
         for _ in range(line_length):
             line = file.readline()
             if not line:
                 break
             content.append(line)
+    command = DataUtil.get_data_by_jsonpath(pid_mapper_file, f"pid_{pid}.command")
     return {
         "status": "success",
+        "command": command,
         "content": content
     }
 
@@ -120,6 +127,7 @@ async def clear_all_pids():
             FileUtil.remove_if_exist(file)
             file_deleted_quantity += 1
         except PermissionError:
+            print(f"cannot remove file: {file}")
             pass
     # close pid
     pid_mapper = DataUtil.get_data(pid_mapper_file)
@@ -151,6 +159,16 @@ async def clear_pid(pid):
         "status": "success",
         "pid": pid,
         "message": f"Clear PID: {pid}, Success~"
+    }
+
+
+@app.post("/bridge/pid/stop")
+async def stop_pid(pid):
+    os.system(f"taskkill /F /PID {pid}")
+    return {
+        "status": "success",
+        "pid": pid,
+        "message": f"Stop PID: {pid}, Success~"
     }
 
 
