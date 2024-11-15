@@ -1,4 +1,6 @@
 # Debug-Bridge-Agent
+* Provide interfaces to communicate between debug bridge server and client.
+* Set up this project on: 11/15/2024.
 
 ### 1. Installation.
 
