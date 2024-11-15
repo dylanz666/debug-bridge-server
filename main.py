@@ -1,13 +1,16 @@
 import os.path
 import subprocess
+from io import BytesIO
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from fastapi.responses import StreamingResponse
 
 from utils.data_util import DataUtil
 from utils.file_util import FileUtil
 from utils.random_util import RandomUtil
+from utils.screenshot_util import ScreenshotUtil
 
 app = FastAPI()
 
@@ -47,7 +50,7 @@ async def run_command(command: Command):
     # disable stdout buffer to make it able to get log immediately
     env["PYTHONUNBUFFERED"] = "1"
 
-    if command.command is None or command.command is "":
+    if command.command is None or command.command == "":
         return {
             "status": "fail",
             "message": "No command provided!"
@@ -210,6 +213,20 @@ async def stop_pid(pid):
         "pid": pid,
         "message": f"Stop PID: {pid}, Success~"
     }
+
+
+@app.get("/bridge/screenshot")
+async def get_desktop_screenshot(scale):
+    """
+    get desktop screenshot
+    :param scale: your screen's scale, such as 1, 1.25, 1.5, 1.75, 2, 2.25
+    :return: desktop screenshot
+    """
+    img = ScreenshotUtil.get_screenshot(scale=float(scale))
+    output_stream = BytesIO()
+    img.save(output_stream, 'JPEG')
+    output_stream.seek(0)
+    return StreamingResponse(output_stream, media_type='image/jpeg')
 
 
 FileUtil.makedirs_if_not_exist("output")
