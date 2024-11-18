@@ -1,5 +1,6 @@
 import os.path
 import subprocess
+import sys
 from io import BytesIO
 
 from fastapi import FastAPI
@@ -11,6 +12,7 @@ from utils.data_util import DataUtil
 from utils.file_util import FileUtil
 from utils.random_util import RandomUtil
 from utils.screenshot_util import ScreenshotUtil
+from uvicorn import run
 
 app = FastAPI()
 
@@ -235,3 +237,10 @@ FileUtil.create_file_if_not_exist(pid_mapper_file)
 # below is for demo usage
 # app.include_router(product.router)
 # app.include_router(user.router)
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Please provide port number, such as 8001")
+        sys.exit(1)
+    port = int(sys.argv[1])
+    run(app, host='0.0.0.0', port=port)

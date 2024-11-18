@@ -30,6 +30,11 @@ uvicorn main:app
 uvicorn main:app --port 8001
 ```
 
+* __by python command__:
+```commandline
+python main.py 8001
+```
+
 ### 4. Swagger UI.
 
 * __default__:
