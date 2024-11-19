@@ -3,14 +3,18 @@ import subprocess
 import sys
 from io import BytesIO
 
+import pyautogui
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi.responses import StreamingResponse
 
+from domain.command import Command
+from domain.screen_action import ScreenAction
 from utils.data_util import DataUtil
 from utils.file_util import FileUtil
 from utils.random_util import RandomUtil
+from utils.screen_action_util import ScreenActionUtil
 from utils.screenshot_util import ScreenshotUtil
 from uvicorn import run
 
@@ -26,9 +30,8 @@ app.add_middleware(
 
 pid_mapper_file = "pid_mapper.json"
 
-
-class Command(BaseModel):
-    command: str
+FileUtil.makedirs_if_not_exist("output")
+FileUtil.create_file_if_not_exist(pid_mapper_file)
 
 
 @app.get("/", summary="ping", deprecated=False)
@@ -218,21 +221,53 @@ async def stop_pid(pid):
 
 
 @app.get("/bridge/screenshot")
-async def get_desktop_screenshot(scale):
+async def get_desktop_screenshot():
     """
     get desktop screenshot
-    :param scale: your screen's scale, such as 1, 1.25, 1.5, 1.75, 2, 2.25
     :return: desktop screenshot
     """
-    img = ScreenshotUtil.get_screenshot(scale=float(scale))
+    img = ScreenshotUtil.get_screenshot()
     output_stream = BytesIO()
     img.save(output_stream, 'JPEG')
     output_stream.seek(0)
     return StreamingResponse(output_stream, media_type='image/jpeg')
 
 
-FileUtil.makedirs_if_not_exist("output")
-FileUtil.create_file_if_not_exist(pid_mapper_file)
+@app.get("/bridge/screen_size")
+async def get_desktop_screen_size():
+    """
+    get desktop screen size
+    :return: screen size
+    """
+    width, height = pyautogui.size()
+    return {
+        "width": width,
+        "height": height
+    }
+
+
+@app.post("/bridge/screen_action")
+async def do_screen_action(screen_action: ScreenAction):
+    """
+    do screen action
+    :param screen_action: object
+    :return: response body, including status, message, screen_action
+    """
+    if screen_action.action == "click":
+        ScreenActionUtil.click(screen_action)
+    if screen_action.action == "double_click":
+        ScreenActionUtil.double_click(screen_action)
+    if screen_action.action == "hover":
+        ScreenActionUtil.hover(screen_action)
+    if screen_action.action == "select":
+        ScreenActionUtil.select(screen_action)
+    if screen_action.action == "drag":
+        ScreenActionUtil.drag(screen_action)
+    return {
+        "status": "success",
+        "screen_action": screen_action
+    }
+
 
 # below is for demo usage
 # app.include_router(product.router)

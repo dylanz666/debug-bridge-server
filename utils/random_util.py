@@ -23,7 +23,7 @@ class RandomUtil:
     def get_random_mix_string(length=5):
         if type(length) is int and 0 < length < 85:
             return ''.join(
-                random.sample("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz,./;'\"[]\`-=<>?:\{}|_+)(*&^%$#@!~",
+                random.sample(r"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz,./;'\"[]\`-=<>?:\{}|_+)(*&^%$#@!~",
                               length))
         raise ValueError("Invalid input!")
 

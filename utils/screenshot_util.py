@@ -1,3 +1,4 @@
+import pyautogui
 import win32gui
 import win32ui
 import win32con
@@ -10,10 +11,9 @@ class ScreenshotUtil:
         pass
 
     @staticmethod
-    def get_screenshot(scale=1.5):
+    def get_screenshot():
         # 获取屏幕尺寸
-        width = int(win32api.GetSystemMetrics(win32con.SM_CXSCREEN) * scale)
-        height = int(win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * scale)
+        width, height = pyautogui.size()
         print(f"Scaled screen width: {width}, Scaled screen height: {height}")
 
         # 创建设备上下文
