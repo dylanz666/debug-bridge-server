@@ -24,13 +24,14 @@ pip install -r requirements.txt
 uvicorn main:app
 ```
 
-* __assign port__:
+* __assign ip and port__:
 
 ```commandline
-uvicorn main:app --port 8001
+uvicorn main:app --host 0.0.0.0 --port 8001
 ```
 
 * __by python command__:
+
 ```commandline
 python main.py 8001
 ```
@@ -41,19 +42,19 @@ python main.py 8001
 
 ```commandline
 # open below url on your browser
-
 https://127.0.0.1:8000/docs
 ```
 
 * __port assigned__:
+
 ```commandline
 # open below url on your browser with your own port
 
 https://127.0.0.1:<your port>/docs
 ```
 
-5. I'm also preparing a web page client to show some details and agent's output.
+### 5. I'm also preparing a web page client to show some details and agent's output.
 * __Please refer to__: https://github.com/dylanz666/debug-bridge-client
 
-6. Reference.
+### 6. Reference.
 * __FastAPI__: https://fastapi.tiangolo.com/tutorial/
