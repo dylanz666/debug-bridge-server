@@ -1,7 +1,6 @@
 fastapi==0.111.1
 jsonpath~=0.82.2
 psutil~=5.9.0
-pydantic~=1.10.12
 jsonpath-ng~=1.6.1
 pywin32==306
 pillow~=10.3.0
