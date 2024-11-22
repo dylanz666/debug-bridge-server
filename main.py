@@ -4,7 +4,7 @@ import sys
 from io import BytesIO
 
 import pyautogui
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
@@ -73,7 +73,7 @@ async def run_command(command: Command):
 
 
 @app.get("/bridge/content/all")
-async def get_bridge_content_by_pid(pid):
+async def get_bridge_content_by_pid(pid: int):
     """
     get all log content for specific process
     :param pid: process id
@@ -95,7 +95,7 @@ async def get_bridge_content_by_pid(pid):
 
 
 @app.get("/bridge/content")
-async def get_bridge_content(pid, start_line=0, line_length=20):
+async def get_bridge_content(pid: int, start_line: int = Query(0, ge=0), line_length: int = Query(20, ge=1)):
     """
     get all log content for specific process with start line and line length
     :param pid: process id
@@ -113,23 +113,27 @@ async def get_bridge_content(pid, start_line=0, line_length=20):
     start_line = int(start_line) - 1
     line_length = int(line_length)
     content = []
-    with open(output_file_path, 'r') as file:
-        for _ in range(start_line):
-            try:
-                next(file)
-            except RuntimeError:
-                pass
-        for _ in range(line_length):
-            line = file.readline()
-            if not line:
-                break
-            content.append(line)
-    command = DataUtil.get_data_by_jsonpath(pid_mapper_file, f"pid_{pid}.command")
-    return {
-        "status": "success",
-        "command": command,
-        "content": content
-    }
+    try:
+        with open(output_file_path, 'r') as file:
+            for _ in range(start_line):
+                next(file, None)
+            for _ in range(line_length):
+                line = file.readline()
+                if not line:
+                    break
+                content.append(line)
+        command = DataUtil.get_data_by_jsonpath(pid_mapper_file, f"pid_{pid}.command")
+        return {
+            "status": "success",
+            "command": command,
+            "content": content
+        }
+    except IOError as e:
+        return {
+            "status": "fail",
+            "message": f"Error reading file of pid: {str(e)}",
+            "content": []
+        }
 
 
 @app.get("/bridge/pids")
@@ -182,7 +186,7 @@ async def clear_all_pids():
 
 
 @app.post("/bridge/pid/clear")
-async def clear_pid(pid):
+async def clear_pid(pid: int):
     """
     stop process and delete it's log content file
     :param pid: process id
@@ -204,7 +208,7 @@ async def clear_pid(pid):
 
 
 @app.post("/bridge/pid/stop")
-async def stop_pid(pid):
+async def stop_pid(pid: int):
     """
     stop pid
     :param pid: process id
