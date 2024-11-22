@@ -9,8 +9,15 @@ handlers:
     class: logging.StreamHandler
     formatter: default
     level: INFO
+  rotating_file_handler:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: default
+    filename: log/app.log
+    maxBytes: 10485760 # limit log file size to 10 MB
+    backupCount: 5 # keep 5 backup log file
 loggers:
   uvicorn:
-    handlers: [ console ]
+    handlers: [ console, rotating_file_handler ]
     level: INFO
     propagate: no
