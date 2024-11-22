@@ -6,7 +6,6 @@ from io import BytesIO
 import pyautogui
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from fastapi.responses import StreamingResponse
 
 from domain.command import Command

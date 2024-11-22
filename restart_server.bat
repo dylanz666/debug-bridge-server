@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-rem find uvicorn process
+rem 查找 uvicorn 进程
 for /f "tokens=2" %%i in ('tasklist ^| findstr uvicorn') do (
     echo Found uvicorn with PID %%i
     taskkill /PID %%i /F
@@ -9,4 +9,5 @@ for /f "tokens=2" %%i in ('tasklist ^| findstr uvicorn') do (
 )
 
 endlocal
-pause
+
+python start_server.py
