@@ -11,3 +11,6 @@ for /f "tokens=2" %%i in ('tasklist ^| findstr uvicorn') do (
 endlocal
 
 python start_server.py
+
+echo Closing current window...
+timeout /t 2 /nobreak > NUL

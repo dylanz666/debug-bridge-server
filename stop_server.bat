@@ -9,4 +9,6 @@ for /f "tokens=2" %%i in ('tasklist ^| findstr uvicorn') do (
 )
 
 endlocal
-pause
+
+echo Closing current window...
+timeout /t 2 /nobreak > NUL

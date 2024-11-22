@@ -28,7 +28,6 @@ app.add_middleware(
 )
 
 pid_mapper_file = "pid_mapper.json"
-
 FileUtil.makedirs_if_not_exist("output")
 FileUtil.create_file_if_not_exist(pid_mapper_file)
 
