@@ -39,3 +39,8 @@ class ScreenActionUtil:
     def drag(screen_action: ScreenAction):
         pyautogui.moveTo(screen_action.start_x, screen_action.start_y, duration=0.5)
         pyautogui.dragTo(screen_action.end_x, screen_action.end_y, duration=1)
+
+    @staticmethod
+    def mouse_right(screen_action):
+        pyautogui.moveTo(screen_action.start_x, screen_action.start_y, duration=0.5)
+        pyautogui.click(button='right')
