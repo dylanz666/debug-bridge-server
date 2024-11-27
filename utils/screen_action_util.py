@@ -68,4 +68,4 @@ class ScreenActionUtil:
         if lower_main_key in ["shift", "alt"] and bind_key is not None and bind_key != "":
             pyautogui.hotkey(lower_main_key, bind_key)
             return
-        pyautogui.typewrite(main_key, interval=0.1)
+        pyautogui.typewrite(main_key)
