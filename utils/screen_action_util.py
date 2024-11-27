@@ -51,10 +51,10 @@ class ScreenActionUtil:
         bind_key = screen_action.bind_key
         if main_key is None or main_key == "":
             return
-
+        control_keys = ["enter", "delete", "backspace", "escape", "capslock", "shift", "alt", "up", "down", "left",
+                        "right", "tab"]
         lower_main_key = main_key.lower()
-        if lower_main_key in ["enter", "delete", "backspace", "escape", "capslock", "shift",
-                              "alt"] and (bind_key is None or bind_key == ""):
+        if lower_main_key in control_keys and (bind_key is None or bind_key == ""):
             main_key = main_key.lower()
             pyautogui.press(main_key)
             return
