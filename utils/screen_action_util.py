@@ -7,7 +7,7 @@ from domain.screen_action import ScreenAction
 
 class ScreenActionUtil:
     def __init__(self) -> None:
-        pass
+        pyautogui.FAILSAFE = False
 
     @staticmethod
     def click(screen_action: ScreenAction):
