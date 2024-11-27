@@ -267,6 +267,8 @@ async def do_screen_action(screen_action: ScreenAction):
         ScreenActionUtil.drag(screen_action)
     if screen_action.action == "mouse_right":
         ScreenActionUtil.mouse_right(screen_action)
+    if screen_action.action == "keyboard_input":
+        ScreenActionUtil.keyboard_input(screen_action)
     return {
         "status": "success",
         "screen_action": screen_action

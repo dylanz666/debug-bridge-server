@@ -44,3 +44,28 @@ class ScreenActionUtil:
     def mouse_right(screen_action):
         pyautogui.moveTo(screen_action.start_x, screen_action.start_y, duration=0.5)
         pyautogui.click(button='right')
+
+    @staticmethod
+    def keyboard_input(screen_action):
+        main_key = screen_action.main_key
+        bind_key = screen_action.bind_key
+        if main_key is None or main_key == "":
+            return
+
+        lower_main_key = main_key.lower()
+        if lower_main_key in ["enter", "delete", "backspace", "escape", "capslock", "shift",
+                              "alt"] and bind_key is None:
+            main_key = main_key.lower()
+            pyautogui.press(main_key)
+            return
+        if lower_main_key == "control" and bind_key is None:
+            main_key = "ctrl"
+            pyautogui.press(main_key)
+            return
+        if lower_main_key == "control" and bind_key is not None and bind_key != "":
+            pyautogui.hotkey('ctrl', bind_key)
+            return
+        if lower_main_key in ["shift", "alt"] and bind_key is not None and bind_key != "":
+            pyautogui.hotkey(lower_main_key, bind_key)
+            return
+        pyautogui.typewrite(main_key, interval=0.1)
