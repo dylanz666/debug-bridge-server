@@ -36,7 +36,7 @@ class RandomUtil:
     @staticmethod
     def get_random_email(length=10):
         if type(length) is int and 0 < length < 63:
-            return ''.join(random.sample(string.ascii_letters + string.digits, length)) + '@ehealth.com'
+            return ''.join(random.sample(string.ascii_letters + string.digits, length)) + '@xxx.com'
         raise ValueError("Invalid input!")
 
     @staticmethod
