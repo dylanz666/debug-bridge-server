@@ -27,7 +27,7 @@ uvicorn main:app
 * __assign ip and port__:
 
 ```commandline
-uvicorn main:app --host 0.0.0.0 --port 8001
+uvicorn main:app --host 0.0.0.0 --port 8001 --log-config log-config.yaml
 ```
 
 * __by python command__:

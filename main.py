@@ -284,4 +284,4 @@ if __name__ == "__main__":
         print("Please provide port number, such as 8001")
         sys.exit(1)
     port = int(sys.argv[1])
-    run(app, host='0.0.0.0', port=port)
+    run(app, host='0.0.0.0', port=port, log_config="log-config.yaml")
