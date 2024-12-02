@@ -2,8 +2,8 @@ import pyautogui
 import win32gui
 import win32ui
 import win32con
-import win32api
 from PIL import Image
+import subprocess
 
 
 class ScreenshotUtil:
