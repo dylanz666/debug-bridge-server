@@ -275,6 +275,44 @@ async def do_screen_action(screen_action: ScreenAction):
     }
 
 
+@app.get("/bridge/adb_devices")
+async def get_adb_devices():
+    """
+    get result of 'adb devices'
+    :return: android devices
+    """
+    try:
+        result = subprocess.run(['adb', 'devices'], capture_output=True, text=True, check=True)
+
+        devices_output = result.stdout.strip().split('\n')[1:]
+        device_sn_list = []
+
+        for line in devices_output:
+            if line.strip():
+                device_info = line.split()
+                device_sn = device_info[0]
+                device_sn_list.append(device_sn)
+
+        return device_sn_list
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing adb command: {e}")
+        return []
+
+
+@app.get("/bridge/adb_screenshot")
+async def do_adb_screenshot(device_id: str):
+    """
+    do adb screenshot
+    :param device_id: android device's serial number
+    :return: screenshot of current android device
+    """
+    img = ScreenshotUtil.get_adb_screenshot(device_id)
+    output_stream = BytesIO()
+    img.convert("RGB").save(output_stream, 'JPEG')
+    output_stream.seek(0)
+    return StreamingResponse(output_stream, media_type='image/jpeg')
+
+
 # below is for demo usage
 # app.include_router(product.router)
 # app.include_router(user.router)

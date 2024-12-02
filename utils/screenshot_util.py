@@ -42,3 +42,16 @@ class ScreenshotUtil:
         win32gui.ReleaseDC(0, hwndDC)
 
         return img
+
+    @staticmethod
+    def get_adb_screenshot(device_id):
+        process = subprocess.Popen(
+            ["adb", "-s", device_id, "exec-out", "screencap", "-p"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        stdout, stderr = process.communicate()
+
+        if process.returncode != 0:
+            return {"error": "Failed to capture screenshot by adb", "details": stderr.decode()}
+        return Image.open(BytesIO(stdout))
