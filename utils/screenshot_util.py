@@ -4,6 +4,7 @@ import win32ui
 import win32con
 from PIL import Image
 import subprocess
+from io import BytesIO
 
 
 class ScreenshotUtil:
