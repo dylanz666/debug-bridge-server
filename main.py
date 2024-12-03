@@ -288,6 +288,8 @@ async def get_adb_devices():
         device_sn_list = []
 
         for line in devices_output:
+            if ":" in line:
+                continue
             if line.strip():
                 device_info = line.split()
                 device_sn = device_info[0]
