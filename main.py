@@ -16,6 +16,8 @@ from utils.random_util import RandomUtil
 from utils.screen_action_util import ScreenActionUtil
 from utils.screenshot_util import ScreenshotUtil
 from uvicorn import run
+from typing import Optional
+import re
 
 app = FastAPI()
 
@@ -236,16 +238,34 @@ async def get_desktop_screenshot():
 
 
 @app.get("/bridge/screen_size")
-async def get_desktop_screen_size():
+async def get_screen_size(device_id: Optional[str] = None):
     """
-    get desktop screen size
+    get screen size
+    :param device_id: android device's serial number
     :return: screen size
     """
-    width, height = pyautogui.size()
-    return {
-        "width": width,
-        "height": height
-    }
+    width = 0
+    height = 0
+    if not device_id:
+        width, height = pyautogui.size()
+        return {
+            "width": width,
+            "height": height
+        }
+    try:
+        args = ['adb', '-s', device_id, 'shell', 'wm size']
+        result = subprocess.run(args, capture_output=True, text=True, check=True)
+        # result sample: Physical size: 1080x1920
+        match = re.search(r'(\d+)x(\d+)', result)
+        width = int(match.group(1)) if match else 0
+        height = int(match.group(2)) if match else 0
+    except subprocess.CalledProcessError as e:
+        pass
+    finally:
+        return {
+            "width": height,
+            "height": height
+        }
 
 
 @app.post("/bridge/screen_action")
