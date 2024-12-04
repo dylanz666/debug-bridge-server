@@ -10,3 +10,4 @@ class ScreenAction(BaseModel):
     end_y: Optional[int] = None
     main_key: Optional[str] = None
     bind_key: Optional[str] = None
+    device_id: Optional[str] = None
