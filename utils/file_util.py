@@ -56,7 +56,7 @@ class FileUtil:
         :return: 无
         """
         with open(file_path, "w", encoding='utf-8') as f:
-            f.write("")
+            f.truncate()
 
     @staticmethod
     def write(file_path, data):
@@ -113,6 +113,8 @@ class FileUtil:
         :param dir_path: 要罗列文件目录与文件的文件路径
         :return: 文件路径dir_path下的所有文件目录与文件路径列表
         """
+        if not os.path.exists(dir_path):
+            return []
         files = []
         file_list = os.listdir(dir_path)  # 列出文件夹下所有的目录与文件
         for file_path in file_list:
