@@ -255,15 +255,16 @@ async def get_screen_size(device_id: Optional[str] = None):
     try:
         args = ['adb', '-s', device_id, 'shell', 'wm size']
         result = subprocess.run(args, capture_output=True, text=True, check=True)
-        # result sample: Physical size: 1080x1920
-        match = re.search(r'(\d+)x(\d+)', result)
+        output = result.stdout.strip()
+        # output sample: Physical size: 1920x1200
+        match = re.search(r'(\d+)x(\d+)', output)
         width = int(match.group(1)) if match else 0
         height = int(match.group(2)) if match else 0
     except subprocess.CalledProcessError as e:
         pass
     finally:
         return {
-            "width": height,
+            "width": width,
             "height": height
         }
 
