@@ -404,6 +404,31 @@ async def wake_up_device(device_id: str):
         }
 
 
+@app.post("/bridge/device/reboot")
+async def reboot_device(device_id: str):
+    """
+    reboot device
+    :param device_id: android device's serial number
+    :return: response body
+    """
+    try:
+        command = f'adb -s ${device_id} reboot'
+        subprocess.run(command, capture_output=True, text=True, check=True, shell=True)
+
+        return {
+            "status": "success",
+            "device_id": device_id,
+            "message": "Your device has rebooted"
+        }
+    except Exception as e:
+        print(f"Error: {e}")
+        return {
+            "status": "failed",
+            "device_id": device_id,
+            "device_ip": "Failed to reboot your device"
+        }
+
+
 # below is for demo usage
 # app.include_router(product.router)
 # app.include_router(user.router)
