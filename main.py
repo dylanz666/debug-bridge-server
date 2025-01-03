@@ -341,6 +341,44 @@ async def do_adb_screenshot(device_id: str):
     return StreamingResponse(output_stream, media_type='image/jpeg')
 
 
+@app.get("/bridge/device_ip")
+async def get_device_ip(device_id: str):
+    """
+    get device ip
+    :param device_id: android device's serial number
+    :return: device ip
+    """
+    try:
+        command = f'adb -s {device_id} shell ip route'
+        result = subprocess.run(command, capture_output=True, text=True, check=True, shell=True)
+
+        match = re.search(r'src (\d+\.\d+\.\d+\.\d+)', result.stdout)
+        if match:
+            device_ip = match.group(1)  # 获取匹配的 IP 地址
+        else:
+            raise ValueError("IP address not found in the output")
+
+        return {
+            "status": "success",
+            "device_id": device_id,
+            "device_ip": device_ip
+        }
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
+        return {
+            "status": "failed",
+            "device_id": device_id,
+            "device_ip": ""
+        }
+    except Exception as e:
+        print(f"Error: {e}")
+        return {
+            "status": "failed",
+            "device_id": device_id,
+            "device_ip": ""
+        }
+
+
 # below is for demo usage
 # app.include_router(product.router)
 # app.include_router(user.router)
