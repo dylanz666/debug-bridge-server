@@ -15,7 +15,7 @@ class ScreenActionUtil:
         start_x = screen_action.start_x
         start_y = screen_action.start_y
         device_id = screen_action.device_id
-        if device_id is not None and device_id is not "":
+        if device_id is not None and device_id != "":
             os.system(f"adb -s {device_id} shell input tap {start_x} {start_y}")
             return
         try:
@@ -29,7 +29,7 @@ class ScreenActionUtil:
         start_x = screen_action.start_x
         start_y = screen_action.start_y
         device_id = screen_action.device_id
-        if device_id is not None and device_id is not "":
+        if device_id is not None and device_id != "":
             os.system(f"adb -s {device_id} shell input tap {start_x} {start_y}")
             time.sleep(0.1)
             os.system(f"adb -s {device_id} shell input tap {start_x} {start_y}")
@@ -45,11 +45,11 @@ class ScreenActionUtil:
         start_x = screen_action.start_x
         start_y = screen_action.start_y
         device_id = screen_action.device_id
-        if device_id is not None and device_id is not "":
+        if device_id is not None and device_id != "":
             os.system(f"adb -s {device_id} shell input touchscreen swipe {start_x} {start_y} {start_x} {start_y} 0")
             return
         try:
-            pyautogui.moveTo(x, y, duration=0.5)
+            pyautogui.moveTo(start_x, start_y, duration=0.5)
             time.sleep(2)
         except pyautogui.FailSafeException:
             pass
@@ -61,7 +61,7 @@ class ScreenActionUtil:
         end_x = screen_action.end_x
         end_y = screen_action.end_y
         device_id = screen_action.device_id
-        if device_id is not None and device_id is not "":
+        if device_id is not None and device_id != "":
             os.system(f"adb -s {device_id} shell input touchscreen swipe {start_x} {start_y} {start_x} {start_y} 0")
             os.system(f"adb -s {device_id} shell input touchscreen swipe {start_x} {start_y} {end_x} {end_y} 100")
             return
@@ -84,7 +84,7 @@ class ScreenActionUtil:
         end_x = screen_action.end_x
         end_y = screen_action.end_y
         device_id = screen_action.device_id
-        if device_id is not None and device_id is not "":
+        if device_id is not None and device_id != "":
             os.system(f"adb -s {device_id} shell input touchscreen swipe {start_x} {start_y} {end_x} {end_y} 500")
             return
         try:
@@ -96,7 +96,7 @@ class ScreenActionUtil:
     @staticmethod
     def mouse_right(screen_action):
         device_id = screen_action.device_id
-        if device_id is not None and device_id is not "":
+        if device_id is not None and device_id != "":
             return
         try:
             pyautogui.moveTo(screen_action.start_x, screen_action.start_y, duration=0.5)
@@ -111,7 +111,7 @@ class ScreenActionUtil:
             return
 
         device_id = screen_action.device_id
-        if device_id is not None and device_id is not "":
+        if device_id is not None and device_id != "":
             os.system(f"adb -s {device_id} shell input text {main_key}")
             return
 

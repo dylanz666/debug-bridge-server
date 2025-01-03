@@ -4,6 +4,7 @@ import sys
 from io import BytesIO
 
 import pyautogui
+from PIL.Image import Image
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -329,7 +330,13 @@ async def do_adb_screenshot(device_id: str):
     """
     img = ScreenshotUtil.get_adb_screenshot(device_id)
     output_stream = BytesIO()
-    img.convert("RGB").save(output_stream, 'JPEG')
+
+    # resize image to 40% of original one
+    new_width = int(img.width * 0.4)
+    new_height = int(img.height * 0.4)
+    img = img.resize((new_width, new_height))
+    # set image's quality to 40% of original one
+    img.convert("RGB").save(output_stream, format='JPEG', quality=40)
     output_stream.seek(0)
     return StreamingResponse(output_stream, media_type='image/jpeg')
 
