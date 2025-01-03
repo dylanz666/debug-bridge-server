@@ -396,11 +396,10 @@ async def wake_up_device(device_id: str):
             "message": "Your device has woken up"
         }
     except Exception as e:
-        print(f"Error: {e}")
         return {
             "status": "failed",
             "device_id": device_id,
-            "device_ip": "Failed to wake up your device"
+            "message": f"Failed to wake up your device, error: {e}"
         }
 
 
@@ -421,11 +420,10 @@ async def reboot_device(device_id: str):
             "message": "Your device has rebooted"
         }
     except Exception as e:
-        print(f"Error: {e}")
         return {
             "status": "failed",
             "device_id": device_id,
-            "device_ip": "Failed to reboot your device"
+            "message": f"Failed to reboot your device, error: {e}"
         }
 
 
