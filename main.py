@@ -379,7 +379,7 @@ async def get_device_ip(device_id: str):
         }
 
 
-@app.get("/bridge/device/wake_up")
+@app.post("/bridge/device/wake_up")
 async def wake_up_device(device_id: str):
     """
     wake up device
