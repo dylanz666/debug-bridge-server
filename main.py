@@ -346,7 +346,7 @@ async def get_device_ip(device_id: str):
     """
     get device ip
     :param device_id: android device's serial number
-    :return: device ip
+    :return: response body
     """
     try:
         command = f'adb -s {device_id} shell ip route'
@@ -376,6 +376,31 @@ async def get_device_ip(device_id: str):
             "status": "failed",
             "device_id": device_id,
             "device_ip": ""
+        }
+
+
+@app.get("/bridge/device/wake_up")
+async def wake_up_device(device_id: str):
+    """
+    wake up device
+    :param device_id: android device's serial number
+    :return: response body
+    """
+    try:
+        command = f'adb -s ${device_id} shell input keyevent KEYCODE_WAKEUP'
+        subprocess.run(command, capture_output=True, text=True, check=True, shell=True)
+
+        return {
+            "status": "success",
+            "device_id": device_id,
+            "message": "Your device has woken up"
+        }
+    except Exception as e:
+        print(f"Error: {e}")
+        return {
+            "status": "failed",
+            "device_id": device_id,
+            "device_ip": "Failed to wake up your device"
         }
 
 
