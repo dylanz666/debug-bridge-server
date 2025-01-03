@@ -387,7 +387,7 @@ async def wake_up_device(device_id: str):
     :return: response body
     """
     try:
-        command = f'adb -s ${device_id} shell input keyevent KEYCODE_WAKEUP'
+        command = f'adb -s {device_id} shell input keyevent KEYCODE_WAKEUP'
         subprocess.run(command, capture_output=True, text=True, check=True, shell=True)
 
         return {
@@ -411,7 +411,7 @@ async def reboot_device(device_id: str):
     :return: response body
     """
     try:
-        command = f'adb -s ${device_id} reboot'
+        command = f'adb -s {device_id} reboot'
         subprocess.run(command, capture_output=True, text=True, check=True, shell=True)
 
         return {
