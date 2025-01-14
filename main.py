@@ -328,17 +328,20 @@ async def do_adb_screenshot(device_id: str):
     :param device_id: android device's serial number
     :return: screenshot of current android device
     """
-    img = ScreenshotUtil.get_adb_screenshot(device_id)
-    output_stream = BytesIO()
+    try:
+        img = ScreenshotUtil.get_adb_screenshot(device_id)
+        output_stream = BytesIO()
 
-    # resize image to 40% of original one
-    new_width = int(img.width * 0.4)
-    new_height = int(img.height * 0.4)
-    img = img.resize((new_width, new_height))
-    # set image's quality to 40% of original one
-    img.convert("RGB").save(output_stream, format='JPEG', quality=40)
-    output_stream.seek(0)
-    return StreamingResponse(output_stream, media_type='image/jpeg')
+        # resize image to 40% of original one
+        new_width = int(img.width * 0.4)
+        new_height = int(img.height * 0.4)
+        img = img.resize((new_width, new_height))
+        # set image's quality to 40% of original one
+        img.convert("RGB").save(output_stream, format='JPEG', quality=40)
+        output_stream.seek(0)
+        return StreamingResponse(output_stream, media_type='image/jpeg')
+    except:
+        return ""
 
 
 @app.get("/bridge/device_ip")
