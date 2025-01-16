@@ -5,7 +5,6 @@ import time
 from io import BytesIO
 
 import pyautogui
-from PIL.Image import Image
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
