@@ -325,7 +325,7 @@ async def get_adb_devices():
 # cache dict
 cache = {}
 # cache duration
-cache_duration = 2
+cache_duration = 2.5
 
 
 @app.get("/bridge/adb_screenshot")
