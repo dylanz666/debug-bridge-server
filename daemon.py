@@ -28,4 +28,4 @@ if __name__ == "__main__":
         stderr=subprocess.DEVNULL,
         creationflags=subprocess.CREATE_NO_WINDOW
     )
-    print("Your server is started, process id: ", process.pid)
+    print("Your server is started on port 8002")

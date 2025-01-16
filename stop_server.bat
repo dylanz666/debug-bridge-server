@@ -1,11 +1,12 @@
 @echo off
 setlocal
 
-rem find uvicorn process
-for /f "tokens=2" %%i in ('tasklist ^| findstr uvicorn') do (
-    echo Found uvicorn with PID %%i
+rem Find the PID of the process using port 8001
+for /f "tokens=5" %%i in ('netstat -ano ^| findstr :8001') do (
+    echo Found process using port 8001 with PID %%i
+    rem Terminate the process
     taskkill /PID %%i /F
-    echo uvicorn process with PID %%i has been terminated.
+    echo Process with PID %%i has been terminated.
 )
 
 endlocal

@@ -16,7 +16,7 @@ async def start_uvicorn_server():
         stderr=subprocess.DEVNULL,
         creationflags=subprocess.CREATE_NO_WINDOW
     )
-    print("Your server is started, process id: ", process.pid)
+    print("Your server is started on port 8001, process id: ", process.pid)
 
 
 async def main():
