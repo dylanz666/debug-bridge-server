@@ -1,13 +1,14 @@
 import os.path
 import subprocess
 import sys
+import time
 from io import BytesIO
 
 import pyautogui
 from PIL.Image import Image
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 
 from domain.command import Command
 from domain.screen_action import ScreenAction
@@ -321,6 +322,12 @@ async def get_adb_devices():
         return []
 
 
+# cache dict
+cache = {}
+# cache duration
+cache_duration = 2
+
+
 @app.get("/bridge/adb_screenshot")
 async def do_adb_screenshot(device_id: str):
     """
@@ -328,8 +335,20 @@ async def do_adb_screenshot(device_id: str):
     :param device_id: android device's serial number
     :return: screenshot of current android device
     """
+    current_time = time.time()
+
+    # check if device_id in cache
+    if device_id in cache:
+        cached_img_stream, timestamp = cache[device_id]
+        # if meet cache rule, then return cached pic directly
+        if current_time - timestamp < cache_duration:
+            return StreamingResponse(BytesIO(cached_img_stream), media_type='image/jpeg')
+
     try:
         img = ScreenshotUtil.get_adb_screenshot(device_id)
+        if img is None:
+            return JSONResponse(status_code=404, content={"error": "Screenshot could not be retrieved."})
+
         output_stream = BytesIO()
 
         # resize image to 40% of original one
@@ -339,9 +358,13 @@ async def do_adb_screenshot(device_id: str):
         # set image's quality to 40% of original one
         img.convert("RGB").save(output_stream, format='JPEG', quality=40)
         output_stream.seek(0)
+
+        # cache picture's output stream and timestamp
+        cache[device_id] = (output_stream.getvalue(), current_time)
+
         return StreamingResponse(output_stream, media_type='image/jpeg')
-    except:
-        return ""
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 @app.get("/bridge/device_ip")
