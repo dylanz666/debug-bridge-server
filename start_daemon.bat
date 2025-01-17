@@ -1,6 +1,6 @@
 @echo off
 echo Start daemon process...
-python daemon.py
+cd C:\dylanz\debug-bridge-server && python daemon.py
 
 echo Closing current window...
 timeout /t 2 /nobreak > NUL
