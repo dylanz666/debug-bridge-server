@@ -62,7 +62,6 @@ class ScreenshotUtil:
                 return {"error": "Failed to capture screenshot by adb", "details": result.stderr.decode()}
 
             return Image.open(BytesIO(result.stdout))
-
         except subprocess.TimeoutExpired:
             return {"error": "Timeout expired while trying to capture screenshot."}
         except Exception as e:
