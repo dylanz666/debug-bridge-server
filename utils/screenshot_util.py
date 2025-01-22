@@ -50,17 +50,20 @@ class ScreenshotUtil:
 
     @staticmethod
     def get_adb_screenshot(device_id):
-        def run_adb_command():
-            process = subprocess.Popen(
+        try:
+            result = subprocess.run(
                 ["adb", "-s", device_id, "exec-out", "screencap", "-p"],
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                stderr=subprocess.PIPE,
+                timeout=5
             )
-            stdout, stderr = process.communicate()
 
-            if process.returncode != 0:
-                return {"error": "Failed to capture screenshot by adb", "details": stderr.decode()}
-            return Image.open(BytesIO(stdout))
+            if result.returncode != 0:
+                return {"error": "Failed to capture screenshot by adb", "details": result.stderr.decode()}
 
-        future = executor.submit(run_adb_command)
-        return future.result()
+            return Image.open(BytesIO(result.stdout))
+
+        except subprocess.TimeoutExpired:
+            return {"error": "Timeout expired while trying to capture screenshot."}
+        except Exception as e:
+            return {"error": "An error occurred.", "details": str(e)}
