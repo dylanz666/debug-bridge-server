@@ -1,5 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
-
 import pyautogui
 import win32gui
 import win32ui
@@ -7,8 +5,6 @@ import win32con
 from PIL import Image
 import subprocess
 from io import BytesIO
-
-executor = ThreadPoolExecutor(max_workers=5)
 
 
 class ScreenshotUtil:
