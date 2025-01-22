@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor
+
 import pyautogui
 import win32gui
 import win32ui
@@ -5,6 +7,8 @@ import win32con
 from PIL import Image
 import subprocess
 from io import BytesIO
+
+executor = ThreadPoolExecutor(max_workers=5)
 
 
 class ScreenshotUtil:
@@ -46,13 +50,17 @@ class ScreenshotUtil:
 
     @staticmethod
     def get_adb_screenshot(device_id):
-        process = subprocess.Popen(
-            ["adb", "-s", device_id, "exec-out", "screencap", "-p"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        stdout, stderr = process.communicate()
+        def run_adb_command():
+            process = subprocess.Popen(
+                ["adb", "-s", device_id, "exec-out", "screencap", "-p"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            stdout, stderr = process.communicate()
 
-        if process.returncode != 0:
-            return {"error": "Failed to capture screenshot by adb", "details": stderr.decode()}
-        return Image.open(BytesIO(stdout))
+            if process.returncode != 0:
+                return {"error": "Failed to capture screenshot by adb", "details": stderr.decode()}
+            return Image.open(BytesIO(stdout))
+
+        future = executor.submit(run_adb_command)
+        return future.result()
