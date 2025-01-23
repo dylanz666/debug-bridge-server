@@ -6,7 +6,7 @@ from PIL import Image
 import subprocess
 from io import BytesIO
 
-# cache = {}
+screenshotting_device_ids = []
 
 
 class ScreenshotUtil:
@@ -48,9 +48,9 @@ class ScreenshotUtil:
 
     @staticmethod
     def get_adb_screenshot(device_id):
-        # if cache[device_id]["doing"] == "true":
-        #     return {"error": "Doing, wait a little bit."}
-        # cache[device_id]["doing"] = "true"
+        if device_id in screenshotting_device_ids:
+            return {"error": "Doing, wait a little bit."}
+        screenshotting_device_ids.append(device_id)
         try:
             result = subprocess.run(
                 ["adb", "-s", device_id, "exec-out", "screencap", "-p"],
@@ -61,11 +61,11 @@ class ScreenshotUtil:
 
             if result.returncode != 0:
                 return {"error": "Failed to capture screenshot by adb", "details": result.stderr.decode()}
-            # cache[device_id]["doing"] = "false"
+            screenshotting_device_ids.remove(device_id)
             return Image.open(BytesIO(result.stdout))
         except subprocess.TimeoutExpired:
-            # cache[device_id]["doing"] = "false"
+            screenshotting_device_ids.remove(device_id)
             return {"error": "Timeout expired while trying to capture screenshot."}
         except Exception as e:
-            # cache[device_id]["doing"] = "false"
+            screenshotting_device_ids.remove(device_id)
             return {"error": "An error occurred.", "details": str(e)}

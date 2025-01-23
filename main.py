@@ -324,7 +324,7 @@ async def get_adb_devices():
 # cache dict
 cache = {}
 # cache duration
-cache_duration = 2.5
+cache_duration = 3
 
 
 @app.get("/bridge/adb_screenshot")
@@ -347,6 +347,8 @@ async def do_adb_screenshot(device_id: str):
         img = ScreenshotUtil.get_adb_screenshot(device_id)
         if img is None:
             return JSONResponse(status_code=404, content={"error": "Screenshot could not be retrieved."})
+        if type(img) is dict:
+            return JSONResponse(status_code=500, content={"error": img.get("error")})
 
         output_stream = BytesIO()
 
