@@ -1,3 +1,5 @@
+import time
+
 import pyautogui
 import win32gui
 import win32ui
@@ -5,6 +7,8 @@ import win32con
 from PIL import Image
 import subprocess
 from io import BytesIO
+
+from screenshots import device_screenshots
 
 screenshotting_device_ids = []
 
@@ -48,10 +52,8 @@ class ScreenshotUtil:
 
     @staticmethod
     def get_adb_screenshot(device_id):
-        if device_id in screenshotting_device_ids:
-            return {"error": "Doing, wait a little bit."}
-        screenshotting_device_ids.append(device_id)
         try:
+            print("Take screenshot...")
             result = subprocess.run(
                 ["adb", "-s", device_id, "exec-out", "screencap", "-p"],
                 stdout=subprocess.PIPE,
@@ -61,11 +63,20 @@ class ScreenshotUtil:
 
             if result.returncode != 0:
                 return {"error": "Failed to capture screenshot by adb", "details": result.stderr.decode()}
-            screenshotting_device_ids.remove(device_id)
-            return Image.open(BytesIO(result.stdout))
+
+            img = Image.open(BytesIO(result.stdout))
+            new_width = int(img.width * 0.4)
+            new_height = int(img.height * 0.4)
+            img = img.resize((new_width, new_height))
+            # set image's quality to 40% of original one
+            output_stream = BytesIO()
+            img.convert("RGB").save(output_stream, format='JPEG', quality=40)
+            output_stream.seek(0)
+
+            device_screenshots[device_id] = (output_stream.getvalue(), time.time())
+
+            return {"message": "success", "device_id": device_id}
         except subprocess.TimeoutExpired:
-            screenshotting_device_ids.remove(device_id)
             return {"error": "Timeout expired while trying to capture screenshot."}
         except Exception as e:
-            screenshotting_device_ids.remove(device_id)
             return {"error": "An error occurred.", "details": str(e)}
