@@ -325,6 +325,8 @@ async def get_adb_devices():
 cache = {}
 # cache duration
 cache_duration = 3
+# cache duration by device id
+cache_duration_by_ids = {}
 
 
 @app.get("/bridge/adb_screenshot")
@@ -336,14 +338,25 @@ async def do_adb_screenshot(device_id: str):
     """
     current_time = time.time()
 
+    if device_id in cache_duration_by_ids:
+        duration = cache_duration_by_ids[device_id]
+        average_duration = round(sum(duration) / len(duration), 1) + 0.5
+        if len(cache_duration_by_ids[device_id]) > 10:
+            cache_duration_by_ids[device_id].pop(0)
+    else:
+        average_duration = cache_duration
+        cache_duration_by_ids[device_id] = []
     # check if device_id in cache
     if device_id in cache:
         cached_img_stream, timestamp = cache[device_id]
         # if meet cache rule, then return cached pic directly
-        if current_time - timestamp < cache_duration:
+        # dynamic cache duration
+        target_cache_duration = (cache_duration if cache_duration > average_duration else average_duration)
+        if (current_time - timestamp) < target_cache_duration:
             return StreamingResponse(BytesIO(cached_img_stream), media_type='image/jpeg')
 
     try:
+        start_time = time.time()
         img = ScreenshotUtil.get_adb_screenshot(device_id)
         if img is None:
             return JSONResponse(status_code=404, content={"error": "Screenshot could not be retrieved."})
@@ -361,6 +374,9 @@ async def do_adb_screenshot(device_id: str):
         output_stream.seek(0)
 
         # cache picture's output stream and timestamp
+        end_time = time.time()
+        duration = round(end_time - start_time, 1)
+        cache_duration_by_ids[device_id].append(duration)
         cache[device_id] = (output_stream.getvalue(), current_time)
 
         return StreamingResponse(output_stream, media_type='image/jpeg')
