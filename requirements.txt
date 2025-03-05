@@ -8,3 +8,7 @@ uvicorn==0.32.0
 pyautogui==0.9.53
 pydantic~=2.9.2
 PyYAML==6.0.2
+adbutils==2.8.0
+av==13.1.0
+loguru==0.7.3
+cachetools==5.5.2
