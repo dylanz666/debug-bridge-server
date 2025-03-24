@@ -58,31 +58,32 @@ class ControlSender:
         buffer = text.encode("utf-8")
         return struct.pack(">i", len(buffer)) + buffer
 
-    # @inject(const.TYPE_INJECT_TOUCH_EVENT)
-    # def touch(self, x: int, y: int, action: int = const.ACTION_DOWN, touch_id: int = -1) -> bytes:
-    #     """
-    #     Touch screen
-    #
-    #     Args:
-    #         x: horizontal position
-    #         y: vertical position
-    #         action: ACTION_DOWN | ACTION_UP | ACTION_MOVE
-    #         touch_id: Default using virtual id -1, you can specify it to emulate multi finger touch
-    #     """
-    #     x, y = max(x, 0), max(y, 0)
-    #     return struct.pack(
-    #         ">BqiiHHHi",
-    #         action,
-    #         touch_id,
-    #         int(x),
-    #         int(y),
-    #         int(self.parent.resolution[0]),
-    #         int(self.parent.resolution[1]),
-    #         0xFFFF,
-    #         1,
-    #     )
-    def touch(self, x, y):
-        self.adbutil_devices.shell(f"input tap {x} {y}")
+    @inject(const.TYPE_INJECT_TOUCH_EVENT)
+    def touch(self, x: int, y: int, action: int = const.ACTION_DOWN, touch_id: int = -1) -> bytes:
+        """
+        Touch screen
+
+        Args:
+            x: horizontal position
+            y: vertical position
+            action: ACTION_DOWN | ACTION_UP | ACTION_MOVE
+            touch_id: Default using virtual id -1, you can specify it to emulate multi finger touch
+        """
+        x, y = max(x, 0), max(y, 0)
+        return struct.pack(
+            ">BqiiHHHi",
+            action,
+            touch_id,
+            int(x),
+            int(y),
+            int(self.parent.resolution[0]),
+            int(self.parent.resolution[1]),
+            0xFFFF,
+            1,
+        )
+
+    # def touch(self, x, y):
+    #     self.adbutil_devices.shell(f"input tap {x} {y}")
 
     @inject(const.TYPE_INJECT_SCROLL_EVENT)
     def scroll(self, x: int, y: int, h: int, v: int) -> bytes:
