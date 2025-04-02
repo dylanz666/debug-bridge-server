@@ -12,6 +12,7 @@ from fastapi.responses import StreamingResponse, JSONResponse
 
 from domain.command import Command
 from domain.screen_action import ScreenAction
+from routers import android
 from screenshots import device_screenshots
 from utils.data_util import DataUtil
 from utils.file_util import FileUtil
@@ -21,11 +22,6 @@ from utils.screenshot_util import ScreenshotUtil
 from uvicorn import run
 from typing import Optional
 import re
-from pyscrcpy import Client
-import cv2 as cv
-from PIL import Image
-from cachetools import TTLCache
-import io
 
 app = FastAPI()
 
@@ -442,14 +438,11 @@ async def reboot_device(device_id: str):
         }
 
 
-# below is for demo usage
-# app.include_router(product.router)
-# app.include_router(user.router)
+app.include_router(android.router)
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Please provide port number, such as 8001")
-        sys.exit(1)
+        sys.argv.append("8001")
     port = int(sys.argv[1])
     run(app, host='0.0.0.0', port=port, log_config="log-config.yaml")

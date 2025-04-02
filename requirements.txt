@@ -5,7 +5,7 @@ jsonpath-ng~=1.6.1
 pywin32==308
 pillow~=10.3.0
 uvicorn==0.32.0
-pyautogui==0.9.53
+pyautogui==0.9.54
 pydantic~=2.9.2
 PyYAML==6.0.2
 adbutils==2.8.0
