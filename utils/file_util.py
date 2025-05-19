@@ -147,7 +147,7 @@ class FileUtil:
             full_dir_path = os.path.join(dir_path, directory)
             modification_time = os.path.getmtime(full_dir_path)
             readable_time = datetime.fromtimestamp(modification_time).strftime('%Y-%m-%d %H:%M:%S')
-            dir_with_time.append((directory, readable_time))
+            dir_with_time.append((full_dir_path, readable_time))
 
         sorted_dirs = sorted(dir_with_time, key=lambda x: x[1], reverse=True)
         return [{"folder_name": d[0], "modification_time": d[1]} for d in sorted_dirs]
