@@ -1,5 +1,6 @@
 import os
 import shutil
+from datetime import datetime
 
 
 class FileUtil:
@@ -132,6 +133,24 @@ class FileUtil:
     @staticmethod
     def get_absolute_file_path(file_path):
         return os.path.join(os.getcwd(), file_path)
+
+    @staticmethod
+    def get_dirs_sorted_by_modification_time(dir_path):
+        if not os.path.exists(dir_path):
+            raise FileNotFoundError("The system cannot find the path specified")
+        # get all dirs which under the input dir_path
+        directories = [d for d in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, d)) and d.isdigit()]
+
+        # sort dirs
+        dir_with_time = []
+        for directory in directories:
+            full_dir_path = os.path.join(dir_path, directory)
+            modification_time = os.path.getmtime(full_dir_path)
+            readable_time = datetime.fromtimestamp(modification_time).strftime('%Y-%m-%d %H:%M:%S')
+            dir_with_time.append((directory, readable_time))
+
+        sorted_dirs = sorted(dir_with_time, key=lambda x: x[1], reverse=True)
+        return [{"folder_name": d[0], "modification_time": d[1]} for d in sorted_dirs]
 
 
 if __name__ == "__main__":

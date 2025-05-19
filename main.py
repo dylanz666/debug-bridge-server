@@ -48,6 +48,22 @@ async def ping():
     return "success"
 
 
+@app.get("/bridge/work_dirs", summary="get_work_dirs", deprecated=False)
+async def get_work_dirs(dir_path: str = "C:\\agent\\_work"):
+    try:
+        work_dirs = FileUtil.get_dirs_sorted_by_modification_time(dir_path=dir_path)
+    except FileNotFoundError:
+        return {
+            "status": "fail",
+            "message": f"The system cannot find the path specified, dir path: {dir_path}",
+            "work_dirs": []
+        }
+    return {
+        "status": "success",
+        "work_dirs": work_dirs
+    }
+
+
 @app.post("/bridge/run")
 async def run_command(command: Command):
     """
@@ -439,7 +455,6 @@ async def reboot_device(device_id: str):
 
 
 app.include_router(android.router)
-
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
